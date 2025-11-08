@@ -48,6 +48,10 @@ class CanBusManager:
 
         print(f"Repeating every {interval}s. Press Ctrl+C to stop.")
         try:
+            """
+            TODO: Change infinite loop to a scheduled job.
+            Loop can be incorporated into main or a thread
+            """
             while True:
                 result = subprocess.run(f"cansend {self.iface} {frame}", shell=True)
                 if result.returncode != 0:
@@ -56,3 +60,16 @@ class CanBusManager:
         except KeyboardInterrupt:
             print("\nStopped by user.")
             self.bring_down_interface()
+
+
+    def dump_frames(self):
+        """
+        Dump incoming CAN frames.
+        """
+        try:
+            subprocess.run(f"candump {self.iface}", shell=True)
+        except KeyboardInterrupt:
+            print(f"\nStopping listen on {self.iface}...")
+        finally:
+            run(f"ip link set {self.iface} down", check=False)
+            print("Interface brought down cleanly.")
